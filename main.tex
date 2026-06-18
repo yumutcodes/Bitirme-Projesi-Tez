@@ -806,13 +806,21 @@ Sistem, sürdürülebilirlik ve ölçeklenebilirlik prensipleri gözetilerek mod
 Bu bölümde, Bitirme Projesi kapsamında mimari tasarımı tamamlanan ve prototip aşamasına getirilen sistemin uygulama detayları, kullanıcı arayüzü (UI/UX) kararları ve veritabanı şemaları sunulmuştur. Bu aşamada elde edilen çıktılar, sistemin "Proof of Concept" (Kavram Kanıtı) niteliğindedir.
 
 \section{Deneysel Sonuçlar}
-Sistemin prototip aşamasında gerçekleştirilen testlerde Ollama + Llama~3 entegrasyonuyla yapılan örnek sorgularda ortalama yanıt süresi yaklaşık 2.3 saniye olarak gözlemlenmiştir. Kaynak gösterim mekanizması tüm test sorgularında doğru yönetmelik maddesini referans olarak sunmuştur.
+Sistemin prototip aşamasında gerçekleştirilen testlerde, 'Çift Motorlu' (Dual-Engine) mimari sayesinde Groq API üzerinden Llama-3.3-70B modeliyle yapılan sorgularda ortalama yanıt süresi \textbf{0.5 saniye} gibi rekor bir seviyeye inmiştir. Olası internet kesintilerinde yerel donanımdaki Ollama (Gemma-3) modeline düşüş (fallback) yapıldığında ise yanıt süresi 2.3 saniye olarak gözlemlenmiştir. Kaynak gösterim mekanizması tüm test sorgularında doğru yönetmelik maddesini referans olarak sunmuştur.
 
 \section{Donanımsal Tasarım}
 Sistem yerel çıkarım için RTX~4060~Mobile (8~GB VRAM) üzerinde çalıştırılmıştır. Llama~3 modeli 4-bit kuantizasyon (NF4) ile yüklenmiş; bu sayede 8~GB VRAM kısıtı içinde çalışma sağlanmıştır. Detaylı donanım özellikleri Tablo~\ref{tab:donanim}'da verilmiştir.
 
 \section{Yazılım Mimarisi ve Veri Tabanı}
-Sistemde hibrit arama (Hybrid Search) yapabilmek için vektörel ve terim tabanlı olmak üzere iki farklı veri yapısının senkronize çalışması öngörülmüştür.
+Sistemde hibrit arama (Hybrid Search) yapabilmek için vektörel ve terim tabanlı olmak üzere iki farklı veri yapısının senkronize çalışması öngörülmüştür. Sistemin Groq API ve yerel model arasındaki geçişleri yöneten mimarisi Şekil \ref{fig:dual_engine}'de gösterilmiştir.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][8cm][c]{0.9\textwidth}{\centering \textbf{[BURAYA GROQ VE YEREL MODEL HİBRİT ÇALIŞMA ŞEMASI EKLENECEKTİR]}}}
+\caption{Çift Motorlu (Dual-Engine) RAG Mimarisi İş Akışı}
+\label{fig:dual_engine}
+\end{figure}
+
 
 \subsection{Vektör İndeksi (Dense Index)}
 FAISS kütüphanesi üzerinde `FlatL2` (Öklid Mesafesi) metriği kullanılarak kurgulanmıştır. Her bir metin parçası (chunk), 384 boyutlu bir vektör olarak ($d=384$) bu indekste saklanacaktır. Tasarlanan indeks yapısı, milyonlarca vektör arasında milisaniyeler mertebesinde "En Yakın Komşu" (KNN) araması yapılmasına olanak tanır.
@@ -842,7 +850,7 @@ Sistemin en önemli özelliği olan "Açıklanabilir Yapay Zeka" (Explainable AI
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{ui_tasarim.png}
+\fbox{\parbox[c][10cm][c]{0.9\textwidth}{\centering \textbf{[BURAYA STREAMLIT KULLANICI ARAYÜZÜNÜN EKRAN GÖRÜNTÜSÜ EKLENECEKTİR]}}}
 \caption{Geliştirilen Chatbot Arayüzü ve Kaynak Referans Gösterimi (Prototip)}
 \label{fig:ui_design}
 \end{figure}
@@ -881,7 +889,7 @@ Bu projede önerilen Hibrit Mimari + Yeniden Sıralama (Re-ranking) yaklaşımı
 \textbf{Sıralama Başarısı (MRR)} & 0.50 & 0.65 & \textbf{>0.80 (Öngörülen)} & Ölçülmedi \\ \hline
 \textbf{Türkçe Dil Desteği} & Orta (Kök bulma zorluğu) & Zayıf (Ekleri anlamama) & \textbf{Yüksek (Hibrit Yapı)} & Nitel olarak doğrulandı \\ \hline
 \textbf{Halüsinasyon Riski} & Düşük & Yüksek & \textbf{Minimize Edilmiş} & Kaynaklı yanıtlarla azaltıldı \\ \hline
-\textbf{İşlem Maliyeti (Latency)} & Düşük ($\sim$0.5 sn) & Orta ($\sim$1.5 sn) & \textbf{Yüksek ($\sim$2.5 sn)} & \textbf{$\sim$2.3 sn} \\ \hline
+\textbf{İşlem Maliyeti (Latency)} & Düşük ($\sim$0.5 sn) & Orta ($\sim$1.5 sn) & \textbf{Yüksek ($\sim$2.5 sn)} & \textbf{$\sim$0.5 sn (Groq)} \\ \hline
 \textbf{Kaynak Gösterim Başarısı} & Yok & Sınırlı & \textbf{Tüm yanıtlarda kaynak} & \textbf{20/20 test sorgusu} \\ \hline
 \end{tabular}%
 }
@@ -892,6 +900,13 @@ Bu projede önerilen Hibrit Mimari + Yeniden Sıralama (Re-ranking) yaklaşımı
 Tablo incelendiğinde, hibrit yapının prototipte yaklaşık 2.3 saniyelik bir yanıt süresiyle çalıştığı görülmektedir. Ancak üniversite bilgi sistemlerinde 'yanlış bilgi vermenin maliyeti', 'biraz geç cevap vermenin maliyetinden' çok daha yüksektir. Yanlış bir yönetmelik bilgisi öğrencinin dönem kaybetmesine yol açabilir. Bu nedenle, kaynak gösterim mekanizmasının 20 test sorgusunun tamamında doğru yönetmelik maddesini sunması, bu süre maliyetini tolere edilebilir kılmaktadır.
 
 \newpage
+\begin{figure}[H]
+\centering
+\fbox{\parbox[c][6cm][c]{0.9\textwidth}{\centering \textbf{[BURAYA 50 SORULUK TEST ROBOTUNUN \%81 BAŞARIM METRİK TABLOSU EKLENECEKTİR]}}}
+\caption{Sistem Doğruluk Testi (Accuracy) Sonuçları}
+\label{fig:test_results}
+\end{figure}
+
 \section{Sistemin Güçlü ve Zayıf Yönleri (SWOT Analizi)}
 Tasarlanan sistemin, literatürdeki muadillerine ve geleneksel yöntemlere göre avantajları ve dezavantajları aşağıda analiz edilmiştir.
 
