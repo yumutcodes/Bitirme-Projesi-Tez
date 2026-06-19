@@ -484,8 +484,7 @@ Johnson ve ark. (2019) tarafından geliştirilen FAISS (Facebook AI Similarity S
 Üniversite yönetmelikleri gibi kurumsal belgelerin veya hassas kişisel verilerin işlendiği sistemlerde, verinin dış bulut servislerine iletilmesi ciddi güvenlik zafiyetlerini beraberinde getirmektedir. Bu risklerin bertaraf edilmesine yönelik stratejiler incelendiğinde; Touvron ve ark. \cite{touvron2023llama}, Llama gibi açık kaynaklı modellerin yerel sunucularda (Local Inference) çalıştırılabilmesinin, verinin kapalı bir ağ içerisinde kalmasını sağlayarak dış kaynaklı sızıntı riskini önemli ölçüde engellediğini vurgulamışlardır. Bu altyapısal önlemi destekleyecek bir diğer yöntem olarak Patil ve ark. \cite{patil2023pii} ise, büyük dil modellerinde hassas bilgilerin korunması ve çıkarım saldırılarına karşı savunma hedeflerinin tanımlanması gerektiğini vurgulamışlardır. Bu yaklaşımlar, akademik asistan sistemlerinin kurumsal gizlilik protokollerine ve yasal veri koruma mevzuatlarına tam uyumlu bir yapıda kurgulanmasına imkan tanımaktadır.
 
 \subsection{Akademik Başarı Ölçümü ve Benchmark Testleri}
-Geliştirilen sistemlerin performansının sadece öznel değerlendirmelerle değil, literatürde kabul görmüş standart test setleri (benchmark) üzerinden objektif olarak ölçülmesi akademik geçerlilik açısından bir zorunluluktur. Bu bağlamda, bilgi erişim sistemlerinin gerçek dünya sorgularına verdiği tepkileri ölçmek adına Kwiatkowski ve ark. \cite{kwiatkowski2019natural} tarafından oluşturulan Natural Questions (NQ) veri seti, sektörel bir standart olarak yaygın şekilde kullanılmaktadır. Modellerin daha geniş bir yelpazede, 57 farklı disiplini kapsayan akademik bilgi kapasitesini test etmek için ise Hendrycks ve ark. \cite{hendrycks2021measuring} tarafından geliştirilen MMLU (Massive Multitask Language Understanding) benchmark'ı öne çıkmaktadır. Öte yandan, RAG mimarilerine özgü değerlendirme ihtiyacını karşılamak amacıyla Es ve ark. \cite{es2023ragas} tarafından sunulan RAGAS (RAG Assessment) çerçevesi; "Sadakat (Faithfulness)", "Cevap Alakalılığı" ve "Bağlam Hassasiyeti" parametrelerinden oluşan üçlü bir denetim mekanizması sağlayarak, sistemin hem erişim hem de üretim kalitesini bütüncül bir şekilde analiz etmeye imkan tanımaktadır.
-
+Geliştirilen sistemlerin performansının literatürde kabul görmüş standart test setleri (benchmark) üzerinden objektif olarak ölçülmesi akademik geçerlilik açısından bir zorunluluktur. Bu bağlamda, bilgi erişim sistemlerinin gerçek dünya sorgularına verdiği tepkileri ölçmek adına Kwiatkowski ve ark. \cite{kwiatkowski2019natural} tarafından oluşturulan Natural Questions (NQ) veri seti, sektörel bir standart olarak yaygın şekilde kullanılmaktadır. Modellerin daha geniş bir yelpazede, 57 farklı disiplini kapsayan akademik bilgi kapasitesini test etmek için ise Hendrycks ve ark. \cite{hendrycks2021measuring} tarafından geliştirilen MMLU (Massive Multitask Language Understanding) benchmark'ı öne çıkmaktadır. Öte yandan, RAG mimarilerine özgü değerlendirme ihtiyacını karşılamak amacıyla Es ve ark. \cite{es2023ragas} tarafından sunulan RAGAS (RAG Assessment) çerçevesi; "Sadakat (Faithfulness)", "Cevap Alakalılığı" ve "Bağlam Hassasiyeti" parametrelerinden oluşan üçlü bir denetim mekanizması sağlayarak, sistemin hem erişim hem de üretim kalitesini bütüncül bir şekilde analiz etmeye imkan tanımaktadır.
 
 \subsection{Prompt Mühendisliği ve Sorgu Optimizasyonu Stratejileri}
 RAG sistemlerinde üretken modelin (generator) başarısı, kendisine sunulan bağlamın (context) ve talimatın (prompt) kalitesine doğrudan bağlıdır. Literatürde bu etkileşimi optimize eden pek çok teknik önerilmiştir.
@@ -700,7 +699,7 @@ def semantic_chunking(text, chunk_size=512, chunk_overlap=50):
 \end{lstlisting}
 
 \section{Hibrit Arama Tasarımı}
-Sistemin en kritik bileşeni, Vektör Arama (Dense) ve Anahtar Kelime Arama (Sparse) yöntemlerini birleştiren Hibrit Arama motorudur. Söz konusu metodoloji, literatürdeki 'Ensemble Retrieval' yaklaşımıyla paralellik göstermektedir. Bu sayede, Türkçenin karmaşık morfolojik yapısının beraberinde getirdiği arama ve erişim kısıtlarının aşılması amaçlanmaktadır.
+Sistemin en kritik bileşeni, Vektör Arama (Dense) ve Anahtar Kelime Arama (Sparse) yöntemlerini birleştiren Hibrit Arama motorudur. Söz konusu metodoloji, literatürdeki 'Ensemble Retrieval' yaklaşımıyla paralellik göstermektedir. Bu sayede, Türkçenin karışık morfolojik yapısının beraberinde getirdiği arama ve erişim kısıtlarının aşılması amaçlanmaktadır.
 
 \subsection{Ağırlıklı Füzyon (Weighted Fusion)}
 Sistem, kullanıcı sorgusunu aldığında iki farklı arama işlemini paralel olarak başlatır:
@@ -708,6 +707,7 @@ Sistem, kullanıcı sorgusunu aldığında iki farklı arama işlemini paralel o
     \item \textbf{Vektör Arama (FAISS):} Sorgunun embedding vektörü ile veritabanındaki vektörler arasındaki Kosinüs Benzerliği hesaplanır. Bu, anlamsal olarak en yakın sonuçları getirir.
     \item \textbf{Anahtar Kelime Arama (BM25):} Sorgudaki terimlerin frekansına dayalı eşleşmeler bulunur. Bu, terimsel olarak en yakın sonuçları getirir (Örn: Madde numaraları).
 \end{enumerate}
+
 
 Her iki yöntemden gelen sonuçlar, aşağıdaki formül kullanılarak birleştirilir:
 \begin{equation}
@@ -736,7 +736,7 @@ def initialize_hybrid_retriever(vector_db, documents):
 \end{lstlisting}
 
 \section{Deneysel Araçlar ve Teknolojiler}
-Projenin tasarım ve prototip geliştirme aşamalarında kullanılması tercih edilen yazılım ve donanım altyapısı, öngörülen performans gereksinimleri dikkate alınarak belirlenmiştir.
+Projenin tasarım ve prototip geliştirme aşamalarında kullanılması tercih edilen yazılım ve donanım altyapısı, öngörülen performans gereksinimleri göz önünde bulundurularak belirlenmiştir.
 
 \subsection{Kullanılan Programlama Dilleri ve Platformlar}
 Geliştirme süreçlerinin merkezinde, geniş kütüphane desteği ve esnekliği nedeniyle Python 3.10 sürümü yer almaktadır. Kullanılan temel kütüphaneler ve çerçeveler:
